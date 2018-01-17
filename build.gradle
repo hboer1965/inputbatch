@@ -1,5 +1,5 @@
 buildscript {
-    ext.kotlin_version = '1.2.10'
+    ext.kotlin_version = '1.2.20'
     ext.coroutine_version = '0.21'
     repositories {
         mavenCentral()
@@ -30,7 +30,7 @@ compileKotlin {
 }
 
 dependencies {
-    compile "org.jetbrains.kotlin:kotlin-stdlib-jre8:$kotlin_version"
+    compile "org.jetbrains.kotlin:kotlin-stdlib-jdk8:$kotlin_version"
     compile 'org.jetbrains.kotlinx:kotlinx-coroutines-core:0.21'
 
     compile 'org.slf4j:slf4j-api:1.7.25'
@@ -43,6 +43,9 @@ dependencies {
     compile group: 'com.googlecode.protobuf-java-format', name: 'protobuf-java-format', version: '1.4'
 
     testCompile "org.jetbrains.kotlin:kotlin-test-junit:$kotlin_version"
+    testCompile "org.jetbrains.kotlin:kotlin-test"
+    testCompile 'org.jetbrains.spek:spek-api:1.1.5'
+    testRuntime 'org.jetbrains.spek:spek-junit-platform-engine:1.1.5'
 }
 
 
@@ -53,7 +56,7 @@ kotlin {
 }
 
 task wrapper(type: Wrapper) {
-    gradleVersion = "4.2"
-    distributionUrl = 'https://services.gradle.org/distributions/gradle-4.2-bin.zip'
+    gradleVersion = "4.4.1"
+    distributionUrl = 'https://services.gradle.org/distributions/gradle-4.4.1-bin.zip'
 }
 

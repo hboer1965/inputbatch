@@ -3,6 +3,8 @@ package commons
 import java.sql.*
 import kotlin.coroutines.experimental.buildSequence
 
+import kotlin.test.assertNotNull
+
 val SelectAndLockJob =
 """declare
  dummy number;
