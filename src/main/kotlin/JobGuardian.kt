@@ -3,9 +3,8 @@ package JobGuardian
 import commons.BrokerConnection
 import commons.JobAdmin
 import commons.JobVragenConnection
-import kotlinx.coroutines.experimental.async
 import kotlinx.coroutines.experimental.channels.Channel
-import kotlinx.coroutines.experimental.runBlocking
+import kotlinx.coroutines.experimental.launch
 
 
 //import org.slf4j.LoggerFactory
@@ -24,11 +23,11 @@ class Application {
         reprocessJobsInProgress()
 
         val channel = Channel<JobAdmin>()
-        async { consumeConn.StartSendingReadyChecks(channel).start() }
+        launch { consumeConn.StartSendingReadyChecks(channel).start() }
 
-        runBlocking {
+        launch {
             for (job in channel) {
-                if (jobVragenConnection.pleasePostJobCheckReadyAgain(job.jobId)) {
+                if (jobVragenConnection.jobHasQuestionsUnanswered(job.jobId)) {
                     val timeRunning = System.currentTimeMillis() - job.startTimeInMilliseconds
                     if (timeRunning > 3600_000) {
                         println("Job with id=${job.jobId} is retried again (${timeRunning} > 3600_000).")

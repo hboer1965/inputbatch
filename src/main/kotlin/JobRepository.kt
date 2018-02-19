@@ -3,8 +3,6 @@ package commons
 import java.sql.*
 import kotlin.coroutines.experimental.buildSequence
 
-import kotlin.test.assertNotNull
-
 val SelectAndLockJob =
 """declare
  dummy number;
@@ -17,8 +15,7 @@ val SelectAndLockJob =
    select *
    from (select jobs.id, batches.id as bdeId, batches.prioriteit, batches.job_grootte
          from pas_jobs jobs
-         inner join pas_batch_definities batches
-         on batches.id = jobs.bde_id
+         join pas_batch_definities batches on batches.id = jobs.bde_id
          where ind_verwerken = 'J'
          and (aantal_keer_geprobeerd < :max_retries1 or 0 = :max_retries2)
          order by batches.prioriteit asc, batches.id asc
@@ -265,7 +262,7 @@ class JobVragenConnection(address: String, user: String, pass: String) {
         rs.close()
     }.toList()
 
-    fun pleasePostJobCheckReadyAgain(jobId: Long): Boolean {
+    fun jobHasQuestionsUnanswered(jobId: Long): Boolean {
         selectJobStmt.setLong(1, jobId)
         var ind_verwerken = ""
         try {

@@ -2,6 +2,7 @@ package inputbatch
 
 import commons.BrokerConnection
 import commons.JobVragenConnection
+import java.sql.Timestamp
 import java.util.concurrent.atomic.AtomicBoolean
 
 //import org.slf4j.LoggerFactory
@@ -27,11 +28,19 @@ class Application {
         }
     }
 
+    data class IdDatetime(val id: Long, val dateTime: Timestamp?)
     fun getAndPostJobQuestions(): Int {
         val job = jobVragenConnection.getAndLockJob(maxTriesPerJob)
         if (job == null) return 0
 
         val jobQuestions = jobVragenConnection.selectJobVragen(job.jobId)
+
+        val vragenPerRegistratiedatumtijd = jobQuestions.groupBy { it.registratie_datumtijd }
+        val x = vragenPerRegistratiedatumtijd.map {k -> k.key}
+//scala
+//        val ipdeResults = vragenPerRegistratiedatumtijd.map {
+//            case (regdate, vragen) => {
+
 
         if (jobQuestions.size > 0) {
             try {

@@ -3,8 +3,10 @@ package commons
 import com.rabbitmq.client.AMQP
 import com.rabbitmq.client.Channel
 import com.rabbitmq.client.Connection
-import kotlinx.coroutines.experimental.runBlocking
+import kotlinx.coroutines.experimental.launch
+import java.util.concurrent.CompletableFuture
 import java.util.concurrent.CountDownLatch
+import java.util.concurrent.TimeUnit
 
 data class JobAdmin(val jobId: Long, val startTimeInMilliseconds:Long, val readyCheckInMilliseconds: Long)
 
@@ -52,7 +54,7 @@ class BrokerConnection(host: String, user: String, pass: String) {
                         val headers = it.properties?.headers
                         val lastWaitTime = headers?.get("x-delay").toString().toLong()
                         val startTime = headers?.get("starttime").toString().toLong()
-                        runBlocking { sendChannel.send(JobAdmin(jobId, startTime, lastWaitTime)) }
+                        launch { sendChannel.send(JobAdmin(jobId, startTime, lastWaitTime)) }
                     })
             )
             latch.await()
@@ -69,12 +71,17 @@ class BrokerConnection(host: String, user: String, pass: String) {
                         val headers = it.properties?.headers
                         val lastWaitTime = headers?.get("x-delay").toString().toLong()
                         val startTime = headers?.get("starttime").toString().toLong()
-                        runBlocking { sendChannel.send(Results(1)) }
+                        launch { sendChannel.send(Results(1)) }
                     })
             )
             latch.await()
             channel.close()
         }
+    }
+
+    private fun abc() {
+        val x = CompletableFuture<String>()
+        x.get(5, TimeUnit.SECONDS)
     }
 
     private fun getRmqConnection(host: String, user: String, pass: String): Connection {
